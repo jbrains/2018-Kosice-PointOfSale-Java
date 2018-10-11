@@ -3,11 +3,17 @@ package ca.jbrains.pos.test;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SellOneItemTest {
     @Test
     public void productFound() throws Exception {
         Display display = new Display();
-        Sale sale = new Sale(display);
+        Sale sale = new Sale(display, new HashMap<String, String>() {{
+            put("12345", "EUR 4.50");
+            put("23456", "EUR 7.95");
+        }});
 
         sale.onBarcode("12345");
 
@@ -17,7 +23,10 @@ public class SellOneItemTest {
     @Test
     public void anotherProductFound() throws Exception {
         Display display = new Display();
-        Sale sale = new Sale(display);
+        Sale sale = new Sale(display, new HashMap<String, String>() {{
+            put("12345", "EUR 4.50");
+            put("23456", "EUR 7.95");
+        }});
 
         sale.onBarcode("23456");
 
@@ -27,7 +36,10 @@ public class SellOneItemTest {
     @Test
     public void productNotFound() throws Exception {
         Display display = new Display();
-        Sale sale = new Sale(display);
+        Sale sale = new Sale(display, new HashMap<String, String>() {{
+            put("12345", "EUR 4.50");
+            put("23456", "EUR 7.95");
+        }});
 
         sale.onBarcode("99999");
 
@@ -37,7 +49,7 @@ public class SellOneItemTest {
     @Test
     public void emptyBarcode() throws Exception {
         Display display = new Display();
-        Sale sale = new Sale(display);
+        Sale sale = new Sale(display, null);
 
         sale.onBarcode("");
 
@@ -58,21 +70,27 @@ public class SellOneItemTest {
 
     public static class Sale {
         private Display display;
+        private final Map<String, String> pricesByBarcode;
 
-        public Sale(Display display) {
+        public Sale(Display display, HashMap<String, String> pricesByBarcode) {
             this.display = display;
+            this.pricesByBarcode = pricesByBarcode;
         }
 
         public void onBarcode(String barcode) {
-            if ("".equals(barcode))
+            // REFACTOR Push this Guard Clause up the call stack
+            if ("".equals(barcode)) {
                 display.setText("Scanning error: empty barcode");
-            else if ("12345".equals(barcode))
-                display.setText("EUR 4.50");
-            else if ("23456".equals(barcode))
-                display.setText("EUR 7.95");
-            else
+                return;
+            }
+
+            String priceAsText = pricesByBarcode.get(barcode);
+            if (priceAsText != null) {
+                display.setText(priceAsText);
+            } else {
                 display.setText(
                         String.format("Product not found: %s", barcode));
+            }
         }
     }
 }
