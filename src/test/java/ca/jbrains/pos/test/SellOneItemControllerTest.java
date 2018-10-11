@@ -1,15 +1,24 @@
 package ca.jbrains.pos.test;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 public class SellOneItemControllerTest {
+
+    private Catalog catalog;
+    private Display display;
+    private SellOneItemController controller;
+
+    @Before
+    public void initializeController() throws Exception {
+        catalog = Mockito.mock(Catalog.class);
+        display = Mockito.mock(Display.class);
+        controller = new SellOneItemController(catalog, display);
+    }
+
     @Test
     public void productFound() throws Exception {
-        Catalog catalog = Mockito.mock(Catalog.class);
-        Display display = Mockito.mock(Display.class);
-        SellOneItemController controller = new SellOneItemController(catalog, display);
-
         Price matchingPrice = Price.euroCents(450);
         Mockito.when(catalog.findPrice("::any barcode::")).thenReturn(matchingPrice);
 
@@ -20,23 +29,14 @@ public class SellOneItemControllerTest {
 
     @Test
     public void productNotFound() throws Exception {
-        Catalog catalog = Mockito.mock(Catalog.class);
-        Display display = Mockito.mock(Display.class);
-        SellOneItemController controller = new SellOneItemController(catalog, display);
-
         Mockito.when(catalog.findPrice("::any barcode::")).thenReturn(null);
         controller.onBarcode("::any barcode::");
 
         Mockito.verify(display).displayProductNotFoundMessage("::any barcode::");
-
     }
 
     @Test
     public void emptyBarcode() throws Exception {
-        Catalog catalog = Mockito.mock(Catalog.class);
-        Display display = Mockito.mock(Display.class);
-        SellOneItemController controller = new SellOneItemController(catalog, display);
-
         controller.onBarcode("");
 
         Mockito.verify(display).displayScannedEmptyBarcodeMessage();
