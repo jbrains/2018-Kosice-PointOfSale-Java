@@ -11,9 +11,9 @@ public class SellOneItemControllerTest {
         SellOneItemController controller = new SellOneItemController(catalog, display);
 
         Price matchingPrice = Price.euroCents(450);
-        Mockito.when(catalog.findPrice("12345")).thenReturn(matchingPrice);
+        Mockito.when(catalog.findPrice("::any barcode::")).thenReturn(matchingPrice);
 
-        controller.onBarcode("12345");
+        controller.onBarcode("::any barcode::");
 
         Mockito.verify(display).displayPrice(matchingPrice);
     }
@@ -24,10 +24,10 @@ public class SellOneItemControllerTest {
         Display display = Mockito.mock(Display.class);
         SellOneItemController controller = new SellOneItemController(catalog, display);
 
-        Mockito.when(catalog.findPrice("12345")).thenReturn(null);
-        controller.onBarcode("12345");
+        Mockito.when(catalog.findPrice("::any barcode::")).thenReturn(null);
+        controller.onBarcode("::any barcode::");
 
-        Mockito.verify(display).displayProductNotFoundMessage("12345");
+        Mockito.verify(display).displayProductNotFoundMessage("::any barcode::");
     }
 
     public interface Catalog {
