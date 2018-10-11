@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 public class SellOneItemControllerTest {
-
     private Catalog catalog;
     private Display display;
     private SellOneItemController controller;
@@ -30,6 +29,7 @@ public class SellOneItemControllerTest {
     @Test
     public void productNotFound() throws Exception {
         Mockito.when(catalog.findPrice("::any barcode::")).thenReturn(null);
+
         controller.onBarcode("::any barcode::");
 
         Mockito.verify(display).displayProductNotFoundMessage("::any barcode::");
