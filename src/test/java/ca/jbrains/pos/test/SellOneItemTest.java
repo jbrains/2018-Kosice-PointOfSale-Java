@@ -10,10 +10,10 @@ public class SellOneItemTest {
     @Test
     public void productFound() throws Exception {
         Display display = new Display();
-        Sale sale = new Sale(display, new HashMap<String, String>() {{
+        Sale sale = new Sale(display, new Catalog(new HashMap<String, String>() {{
             put("12345", "EUR 4.50");
             put("23456", "EUR 7.95");
-        }});
+        }}));
 
         sale.onBarcode("12345");
 
@@ -23,10 +23,10 @@ public class SellOneItemTest {
     @Test
     public void anotherProductFound() throws Exception {
         Display display = new Display();
-        Sale sale = new Sale(display, new HashMap<String, String>() {{
+        Sale sale = new Sale(display, new Catalog(new HashMap<String, String>() {{
             put("12345", "EUR 4.50");
             put("23456", "EUR 7.95");
-        }});
+        }}));
 
         sale.onBarcode("23456");
 
@@ -36,10 +36,10 @@ public class SellOneItemTest {
     @Test
     public void productNotFound() throws Exception {
         Display display = new Display();
-        Sale sale = new Sale(display, new HashMap<String, String>() {{
+        Sale sale = new Sale(display, new Catalog(new HashMap<String, String>() {{
             put("12345", "EUR 4.50");
             put("23456", "EUR 7.95");
-        }});
+        }}));
 
         sale.onBarcode("99999");
 
@@ -63,34 +63,42 @@ public class SellOneItemTest {
             return text;
         }
 
-        public void setText(String text) {
-            this.text = text;
+        public void displayProductNotFoundMessage(String barcode) {
+            this.text = String.format("Product not found: %s", barcode);
+        }
+
+        public void displayPrice(String priceAsText) {
+            this.text = priceAsText;
+        }
+
+        public void displayScanningErrorMessage() {
+            this.text = "Scanning error: empty barcode";
         }
     }
 
     public static class Sale {
-        private Display display;
-        private final Map<String, String> pricesByBarcode;
+        private final Display display;
+        private final Catalog catalog;
 
-        public Sale(Display display, HashMap<String, String> pricesByBarcode) {
+        public Sale(Display display, Catalog catalog) {
             this.display = display;
-            this.pricesByBarcode = pricesByBarcode;
+            this.catalog = catalog;
         }
 
         public void onBarcode(String barcode) {
             // REFACTOR Push this Guard Clause up the call stack
             if ("".equals(barcode)) {
-                display.setText("Scanning error: empty barcode");
+                display.displayScanningErrorMessage();
                 return;
             }
 
-            String priceAsText = pricesByBarcode.get(barcode);
-            if (priceAsText != null) {
-                display.setText(priceAsText);
+            String priceAsText = catalog.findPrice(barcode);
+            if (priceAsText == null) {
+                display.displayProductNotFoundMessage(barcode);
             } else {
-                display.setText(
-                        String.format("Product not found: %s", barcode));
+                display.displayPrice(priceAsText);
             }
         }
+
     }
 }
