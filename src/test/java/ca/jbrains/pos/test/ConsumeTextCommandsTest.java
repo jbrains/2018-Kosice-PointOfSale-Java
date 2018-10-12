@@ -7,10 +7,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
-import java.util.List;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
 public class ConsumeTextCommandsTest {
 
@@ -19,7 +15,7 @@ public class ConsumeTextCommandsTest {
     @Test
     public void oneBarcode() throws Exception {
         consumeTextCommandsUsingListener(
-                new StringReader(unlines(Arrays.asList("::barcode::"))),
+                new StringReader(unlines("::barcode::")),
                 barcodeScannedListener);
 
         Mockito.verify(barcodeScannedListener).onBarcode("::barcode::");
@@ -39,7 +35,7 @@ public class ConsumeTextCommandsTest {
     @Test
     public void threeBarcodes() throws Exception {
         consumeTextCommandsUsingListener(
-                new StringReader(unlines(Arrays.asList("::barcode 1::", "::barcode 2::", "::barcode 3::"))),
+                new StringReader(unlines("::barcode 1::", "::barcode 2::", "::barcode 3::")),
                 barcodeScannedListener);
 
         Mockito.verify(barcodeScannedListener).onBarcode("::barcode 1::");
@@ -48,8 +44,24 @@ public class ConsumeTextCommandsTest {
         Mockito.verify(barcodeScannedListener, Mockito.atMost(3)).onBarcode(Mockito.anyString());
     }
 
-    private static String unlines(List<String> lines) {
-        return lines.stream()
+    @Test
+    public void leadingAndTrailingWhitespace() throws Exception {
+        consumeTextCommandsUsingListener(
+                new StringReader(unlines(
+                        "  \t  ::barcode 1::  \t    ",
+                        "     ::barcode 2::",
+                        "::barcode 3::      ")),
+                barcodeScannedListener);
+
+        Mockito.verify(barcodeScannedListener).onBarcode("::barcode 1::");
+        Mockito.verify(barcodeScannedListener).onBarcode("::barcode 2::");
+        Mockito.verify(barcodeScannedListener).onBarcode("::barcode 3::");
+        Mockito.verify(barcodeScannedListener, Mockito.atMost(3)).onBarcode(Mockito.anyString());
+    }
+
+    // REFACTOR Move to some general-purpose text library
+    private static String unlines(String... lines) {
+        return Arrays.asList(lines).stream()
                 .map(line -> String.format("%s\n", line))
                 .reduce("", (s, s2) -> s + s2);
     }
