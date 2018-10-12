@@ -6,6 +6,7 @@ import org.mockito.Mockito;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.function.Function;
 
 public class ConsumeTextCommandsTest {
 
@@ -31,11 +32,21 @@ public class ConsumeTextCommandsTest {
         Mockito.verify(barcodeScannedListener, Mockito.never()).onBarcode(Mockito.any());
     }
 
+    @Test
+    public void threeBarcodes() throws Exception {
+        consumeTextCommandsUsingListener(
+                new StringReader("::barcode 1::\n::barcode 2::\n::barcode 3::\n"),
+                barcodeScannedListener);
+
+        Mockito.verify(barcodeScannedListener).onBarcode("::barcode 1::");
+        Mockito.verify(barcodeScannedListener).onBarcode("::barcode 2::");
+        Mockito.verify(barcodeScannedListener).onBarcode("::barcode 3::");
+        Mockito.verify(barcodeScannedListener, Mockito.atMost(3)).onBarcode(Mockito.anyString());
+    }
+
     // SMELL 'consume' seems vague as name.
     // SMELL StringReader is probably too specific
     private void consumeTextCommandsUsingListener(StringReader stringReader, BarcodeScannedListener barcodeScannedListener) throws IOException {
-        String line = new BufferedReader(stringReader).readLine();
-        if (line != null)
-            barcodeScannedListener.onBarcode(line);
+        new BufferedReader(stringReader).lines().forEach(barcodeScannedListener::onBarcode);
     }
 }
