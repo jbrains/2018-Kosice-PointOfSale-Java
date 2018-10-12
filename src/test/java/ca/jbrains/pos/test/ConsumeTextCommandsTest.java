@@ -28,7 +28,7 @@ public class ConsumeTextCommandsTest {
                 new StringReader(""),
                 barcodeScannedListener);
 
-        Mockito.verify(barcodeScannedListener, Mockito.never()).onBarcode(Mockito.anyString());
+        Mockito.verify(barcodeScannedListener, Mockito.never()).onBarcode(Mockito.any());
     }
 
     // SMELL 'consume' seems vague as name.
