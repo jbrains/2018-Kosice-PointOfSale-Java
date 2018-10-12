@@ -32,7 +32,7 @@ public class SanitizeCommandTest {
         return commandStream.collect(Collectors.toList());
     }
 
-    private Stream<String> sanitize(String text) {
+    public static Stream<String> sanitize(String text) {
         return Stream.of(text.split(System.lineSeparator())).map(String::trim);
     }
 }

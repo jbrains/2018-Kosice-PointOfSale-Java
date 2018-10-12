@@ -44,23 +44,6 @@ public class ConsumeTextCommandsTest {
         Mockito.verify(barcodeScannedListener, Mockito.atMost(3)).onBarcode(Mockito.anyString());
     }
 
-    @Test
-    public void leadingAndTrailingWhitespace() throws Exception {
-        // SMELL I'm using the behavior "consume multiple lines of text"
-        // to test the behavior "remove whitespace from a command".
-        consumeTextCommandsUsingListener(
-                new StringReader(unlines(
-                        "  \t  ::barcode 1::  \t    ",
-                        "     ::barcode 2::",
-                        "::barcode 3::      ")),
-                barcodeScannedListener);
-
-        Mockito.verify(barcodeScannedListener).onBarcode("::barcode 1::");
-        Mockito.verify(barcodeScannedListener).onBarcode("::barcode 2::");
-        Mockito.verify(barcodeScannedListener).onBarcode("::barcode 3::");
-        Mockito.verify(barcodeScannedListener, Mockito.atMost(3)).onBarcode(Mockito.anyString());
-    }
-
     // REFACTOR Move to some general-purpose text library
     private static String unlines(String... lines) {
         return Arrays.asList(lines).stream()
@@ -71,6 +54,9 @@ public class ConsumeTextCommandsTest {
     // SMELL 'consume' seems vague as name.
     // SMELL StringReader is probably too specific
     private void consumeTextCommandsUsingListener(StringReader stringReader, BarcodeScannedListener barcodeScannedListener) throws IOException {
-        new BufferedReader(stringReader).lines().map(String::trim).forEach(barcodeScannedListener::onBarcode);
+        // REFACTOR Cluster of behavior. Let's separate sanitize() from the rest.
+        new BufferedReader(stringReader).lines()
+                .flatMap(SanitizeCommandTest::sanitize)
+                .forEach(barcodeScannedListener::onBarcode);
     }
 }
