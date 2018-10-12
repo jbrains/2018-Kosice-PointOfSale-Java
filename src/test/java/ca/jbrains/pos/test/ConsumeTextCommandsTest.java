@@ -46,6 +46,8 @@ public class ConsumeTextCommandsTest {
 
     @Test
     public void leadingAndTrailingWhitespace() throws Exception {
+        // SMELL I'm using the behavior "consume multiple lines of text"
+        // to test the behavior "remove whitespace from a command".
         consumeTextCommandsUsingListener(
                 new StringReader(unlines(
                         "  \t  ::barcode 1::  \t    ",
