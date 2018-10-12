@@ -69,6 +69,6 @@ public class ConsumeTextCommandsTest {
     // SMELL 'consume' seems vague as name.
     // SMELL StringReader is probably too specific
     private void consumeTextCommandsUsingListener(StringReader stringReader, BarcodeScannedListener barcodeScannedListener) throws IOException {
-        new BufferedReader(stringReader).lines().forEach(barcodeScannedListener::onBarcode);
+        new BufferedReader(stringReader).lines().map(String::trim).forEach(barcodeScannedListener::onBarcode);
     }
 }
