@@ -3,7 +3,6 @@ package ca.jbrains.pos.test;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,31 +11,33 @@ public class FindPriceInMemoryCatalogTest {
     public void productFound() throws Exception {
         Price matchingPrice = Price.euroCents(700);
 
-        InMemoryCatalog catalog = new InMemoryCatalog(Collections.singletonMap(
-                "62746", matchingPrice));
+        Catalog catalog = catalogWith("::known barcode::", matchingPrice);
 
-        Assert.assertEquals(matchingPrice, catalog.findPrice("62746"));
+        Assert.assertEquals(matchingPrice, catalog.findPrice("::known barcode::"));
     }
 
-    @Test
-    public void productFoundAmongMany() throws Exception {
-        Price matchingPrice = Price.euroCents(700);
-
-        InMemoryCatalog catalog = new InMemoryCatalog(new HashMap<String, Price>() {{
-            put("not 62746", Price.euroCents(-1));
-            put("definitely not 62746", Price.euroCents(-2));
-            put("62746", matchingPrice);
-            put("obviously not 62746, you idiot", Price.euroCents(-3));
+    private Catalog catalogWith(String barcode, Price matchingPrice) {
+        return new InMemoryCatalog(new HashMap<String, Price>() {{
+            put(String.format("not %s", barcode), Price.euroCents(-1));
+            put(String.format("definitely not %s", barcode), Price.euroCents(-2));
+            put(barcode, matchingPrice);
+            put(String.format("obviously not %s, you idiot", barcode), Price.euroCents(-3));
         }});
-
-        Assert.assertEquals(matchingPrice, catalog.findPrice("62746"));
     }
 
     @Test
     public void productNotFound() throws Exception {
-        InMemoryCatalog catalog = new InMemoryCatalog(Collections.emptyMap());
+        Catalog catalog = catalogWithout("::missing barcode::");
 
-        Assert.assertEquals(null, catalog.findPrice("62746"));
+        Assert.assertEquals(null, catalog.findPrice("::missing barcode::"));
+    }
+
+    private Catalog catalogWithout(String barcodeToAvoid) {
+        return new InMemoryCatalog(new HashMap<String, Price>() {{
+            put(String.format("not %s", barcodeToAvoid), Price.euroCents(-1));
+            put(String.format("definitely not %s", barcodeToAvoid), Price.euroCents(-2));
+            put(String.format("obviously not %s, you idiot", barcodeToAvoid), Price.euroCents(-3));
+        }});
     }
 
     public static class InMemoryCatalog implements Catalog {
