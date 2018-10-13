@@ -4,7 +4,7 @@ import io.vavr.collection.Stream;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class ConsumeTextCommandsTest {
+public class InterpretTextCommandsAsBarcodesTest {
     private final BarcodeScannedListener barcodeScannedListener = Mockito.mock(BarcodeScannedListener.class);
 
     @Test
