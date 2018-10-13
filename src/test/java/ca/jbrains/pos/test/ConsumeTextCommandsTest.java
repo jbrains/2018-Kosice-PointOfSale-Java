@@ -5,7 +5,6 @@ import io.vavr.collection.Stream;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -58,8 +57,9 @@ public class ConsumeTextCommandsTest {
     // SMELL StringReader is probably too specific
     private void consumeTextCommandsUsingListener(StringReader stringReader, BarcodeScannedListener barcodeScannedListener) throws IOException {
         // REFACTOR Cluster of behavior. Let's separate sanitize() from the rest.
+        RemovingWhitespaceCommandLexer removingWhitespaceCommandLexer = new RemovingWhitespaceCommandLexer();
         streamLinesFromSource(stringReader)
-                .flatMap(SanitizeCommandTest::sanitize)
+                .flatMap(removingWhitespaceCommandLexer::tokenize)
                 .forEach(barcodeScannedListener::onBarcode);
     }
 
