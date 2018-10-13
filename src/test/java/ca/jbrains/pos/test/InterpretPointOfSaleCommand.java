@@ -7,7 +7,8 @@ public class InterpretPointOfSaleCommand implements InterpretCommand {
         this.barcodeScannedListener = barcodeScannedListener;
     }
 
-    void interpretCommand(String command) {
+    @Override
+    public void interpretCommand(String command) {
         barcodeScannedListener.onBarcode(command);
     }
 }
