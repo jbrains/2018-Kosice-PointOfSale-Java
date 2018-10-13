@@ -23,7 +23,7 @@ import java.io.Reader;
 // According to the documentation of BufferedReader, lines() might throw UncheckedIOException,
 // for which we do not yet have any tests.
 public class ReaderBasedTextSource {
-    private BufferedReader bufferedReader;
+    public BufferedReader bufferedReader;
 
     // REFACTOR Consider using java.util.Scanner instead of BufferedReader.
     public ReaderBasedTextSource(Reader source) {
