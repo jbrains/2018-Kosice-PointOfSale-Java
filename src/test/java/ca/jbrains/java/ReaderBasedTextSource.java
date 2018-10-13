@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 public class ReaderBasedTextSource {
     private BufferedReader bufferedReader;
 
+    // REFACTOR Consider using java.util.Scanner instead of BufferedReader.
     public ReaderBasedTextSource(Reader source) {
         this.bufferedReader = new BufferedReader(source);
     }
