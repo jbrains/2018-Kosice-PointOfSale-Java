@@ -9,8 +9,7 @@ public class ConsumeTextCommandsTest {
 
     @Test
     public void oneBarcode() throws Exception {
-        Stream<String> commands = tokenize(new RemovingWhitespaceCommandLexer(), Stream.of("::barcode::"));
-        interpretCommands(barcodeScannedListener, commands);
+        interpretCommands(barcodeScannedListener, Stream.of("::barcode::"));
 
         Mockito.verify(barcodeScannedListener).onBarcode("::barcode::");
         // REFACTOR I think this becomes "verify at most n commands (of any kind, let alone 'barcode')".
@@ -19,16 +18,15 @@ public class ConsumeTextCommandsTest {
 
     @Test
     public void noBarcodes() throws Exception {
-        Stream<String> commands = tokenize(new RemovingWhitespaceCommandLexer(), Stream.empty());
-        interpretCommands(barcodeScannedListener, commands);
+        interpretCommands(barcodeScannedListener, Stream.empty());
 
         Mockito.verify(barcodeScannedListener, Mockito.never()).onBarcode(Mockito.any());
     }
 
     @Test
     public void threeBarcodes() throws Exception {
-        Stream<String> commands = tokenize(new RemovingWhitespaceCommandLexer(), Stream.of("::barcode 1::", "::barcode 2::", "::barcode 3::"));
-        interpretCommands(barcodeScannedListener, commands);
+        interpretCommands(barcodeScannedListener, Stream.of(
+                "::barcode 1::", "::barcode 2::", "::barcode 3::"));
 
         Mockito.verify(barcodeScannedListener).onBarcode("::barcode 1::");
         Mockito.verify(barcodeScannedListener).onBarcode("::barcode 2::");
@@ -38,9 +36,5 @@ public class ConsumeTextCommandsTest {
 
     private void interpretCommands(BarcodeScannedListener barcodeScannedListener, Stream<String> commands) {
         commands.forEach(barcodeScannedListener::onBarcode);
-    }
-
-    private Stream<String> tokenize(CommandLexer commandLexer, Stream<String> lines) {
-        return lines.flatMap(commandLexer::tokenize);
     }
 }
