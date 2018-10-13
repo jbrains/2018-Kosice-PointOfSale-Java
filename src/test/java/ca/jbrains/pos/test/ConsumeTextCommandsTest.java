@@ -34,6 +34,8 @@ public class ConsumeTextCommandsTest {
         Mockito.verify(barcodeScannedListener, Mockito.atMost(3)).onBarcode(Mockito.anyString());
     }
 
+    // CONTRACT
+    // assume that all commands are "valid" for whatever meaning of "valid" matters to you.
     private void interpretCommands(BarcodeScannedListener barcodeScannedListener, Stream<String> commands) {
         commands.forEach(barcodeScannedListener::onBarcode);
     }
