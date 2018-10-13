@@ -12,23 +12,23 @@ public class LearnReadingLinesTest {
 
     @Test
     public void readOneLineWithoutALineSeparator() throws Exception {
-        checkHowTextStreamsAsLines(
-                "this is one line of text without a line separator.",
-                List.of("this is one line of text without a line separator."));
+        Assert.assertThat(
+                linesFrom("this is one line of text without a line separator."),
+                CoreMatchers.equalTo(List.of("this is one line of text without a line separator.")));
     }
 
     @Test
     public void readOneLineFromABlobOfTextEndingWithALineSeparator() throws Exception {
-        checkHowTextStreamsAsLines(
-                endWithLineSeparator("this is one line of text ending in a line separator."),
-                List.of("this is one line of text ending in a line separator."));
+        Assert.assertThat(
+                linesFrom(endWithLineSeparator("this is one line of text ending in a line separator.")),
+                CoreMatchers.equalTo(List.of("this is one line of text ending in a line separator.")));
 
     }
 
     @Test
     public void readMultipleLinesEndingWithSeveralEmptyLines() throws Exception {
-        checkHowTextStreamsAsLines(
-                new StringBuilder()
+        Assert.assertThat(
+                linesFrom(new StringBuilder()
                         .append(endWithLineSeparator("a non-empty line of text"))
                         .append(endWithLineSeparator("a non-empty line of text"))
                         .append(endWithLineSeparator("a non-empty line of text"))
@@ -36,25 +36,26 @@ public class LearnReadingLinesTest {
                         .append(endWithLineSeparator(""))
                         .append(endWithLineSeparator(""))
                         .append(endWithLineSeparator(""))
-                        .toString(),
-                List.of("a non-empty line of text", "a non-empty line of text", "a non-empty line of text", "", "", "", "")
-        );
+                        .toString()),
+                CoreMatchers.equalTo(List.of("a non-empty line of text", "a non-empty line of text", "a non-empty line of text", "", "", "", "")));
     }
 
     @Test
     public void readNothing() throws Exception {
-        checkHowTextStreamsAsLines("", List.empty());
+        Assert.assertThat(
+                linesFrom(""),
+                CoreMatchers.equalTo(List.<String>empty()));
     }
 
     @Test
     public void readOnlyOneEmptyLine() throws Exception {
-        checkHowTextStreamsAsLines(System.lineSeparator(), List.of(""));
+        Assert.assertThat(
+                linesFrom(System.lineSeparator()),
+                CoreMatchers.equalTo(List.of("")));
     }
 
-    private void checkHowTextStreamsAsLines(String text, List<String> expectedLines) {
-        Assert.assertThat(
-                List.ofAll(new ReaderBasedTextSource(new StringReader(text)).streamLines()),
-                CoreMatchers.is(expectedLines));
+    private List<String> linesFrom(String text) {
+        return List.ofAll(new ReaderBasedTextSource(new StringReader(text)).parseIntoLines());
     }
 
     // REFACTOR Maybe move to a generic text library?

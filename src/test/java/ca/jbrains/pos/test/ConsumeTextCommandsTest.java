@@ -67,6 +67,6 @@ public class ConsumeTextCommandsTest {
     // SMELL Is the something even more generic than Reader?
     // REFACTOR Introduce TextSource interface?
     private Stream<String> streamLinesFromSource(Reader source) {
-        return new ReaderBasedTextSource(source).streamLines();
+        return new ReaderBasedTextSource(source).parseIntoLines();
     }
 }

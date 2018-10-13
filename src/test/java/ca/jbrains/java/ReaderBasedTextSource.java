@@ -32,7 +32,7 @@ public class ReaderBasedTextSource {
 
     // CONTRACT
     // Might throw UncheckedIOException as you work with the stream.
-    public Stream<String> streamLines() {
+    public Stream<String> parseIntoLines() {
         return Stream.ofAll(bufferedReader.lines());
     }
 }
