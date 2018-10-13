@@ -1,23 +1,16 @@
 package ca.jbrains.pos.test;
 
-import ca.jbrains.java.ReaderBasedTextSource;
 import io.vavr.collection.Stream;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import java.io.BufferedReader;
-import java.io.StringReader;
-import java.util.Arrays;
 
 public class ConsumeTextCommandsTest {
     private final BarcodeScannedListener barcodeScannedListener = Mockito.mock(BarcodeScannedListener.class);
 
     @Test
     public void oneBarcode() throws Exception {
-        consumeTextCommandsUsingListener(
-                new RemovingWhitespaceCommandLexer(),
-                barcodeScannedListener,
-                Stream.of("::barcode::"));
+        Stream<String> commands = tokenize(new RemovingWhitespaceCommandLexer(), Stream.of("::barcode::"));
+        interpretCommands(barcodeScannedListener, commands);
 
         Mockito.verify(barcodeScannedListener).onBarcode("::barcode::");
         // REFACTOR I think this becomes "verify at most n commands (of any kind, let alone 'barcode')".
@@ -26,20 +19,16 @@ public class ConsumeTextCommandsTest {
 
     @Test
     public void noBarcodes() throws Exception {
-        consumeTextCommandsUsingListener(
-                new RemovingWhitespaceCommandLexer(),
-                barcodeScannedListener,
-                Stream.empty());
+        Stream<String> commands = tokenize(new RemovingWhitespaceCommandLexer(), Stream.empty());
+        interpretCommands(barcodeScannedListener, commands);
 
         Mockito.verify(barcodeScannedListener, Mockito.never()).onBarcode(Mockito.any());
     }
 
     @Test
     public void threeBarcodes() throws Exception {
-        consumeTextCommandsUsingListener(
-                new RemovingWhitespaceCommandLexer(),
-                barcodeScannedListener,
-                Stream.of("::barcode 1::", "::barcode 2::", "::barcode 3::"));
+        Stream<String> commands = tokenize(new RemovingWhitespaceCommandLexer(), Stream.of("::barcode 1::", "::barcode 2::", "::barcode 3::"));
+        interpretCommands(barcodeScannedListener, commands);
 
         Mockito.verify(barcodeScannedListener).onBarcode("::barcode 1::");
         Mockito.verify(barcodeScannedListener).onBarcode("::barcode 2::");
@@ -47,9 +36,11 @@ public class ConsumeTextCommandsTest {
         Mockito.verify(barcodeScannedListener, Mockito.atMost(3)).onBarcode(Mockito.anyString());
     }
 
-    // SMELL 'consume' seems vague as name.
-    // SMELL StringReader is probably too specific
-    private void consumeTextCommandsUsingListener(CommandLexer commandLexer, BarcodeScannedListener barcodeScannedListener, Stream<String> lines) {
-        lines.flatMap(commandLexer::tokenize).forEach(barcodeScannedListener::onBarcode);
+    private void interpretCommands(BarcodeScannedListener barcodeScannedListener, Stream<String> commands) {
+        commands.forEach(barcodeScannedListener::onBarcode);
+    }
+
+    private Stream<String> tokenize(CommandLexer commandLexer, Stream<String> lines) {
+        return lines.flatMap(commandLexer::tokenize);
     }
 }
