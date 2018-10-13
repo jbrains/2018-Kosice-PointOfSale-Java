@@ -2,19 +2,13 @@ package ca.jbrains.java.test;
 
 import ca.jbrains.java.ReaderBasedTextSource;
 import io.vavr.collection.List;
-import io.vavr.collection.Stream;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.Reader;
 import java.io.StringReader;
 
 public class LearnReadingLinesTest {
-    public static Stream<String> streamLinesFromSource(Reader source) {
-        return new ReaderBasedTextSource(source).streamLines();
-    }
 
     @Test
     public void readOneLineWithoutALineSeparator() throws Exception {
@@ -58,16 +52,13 @@ public class LearnReadingLinesTest {
     }
 
     private void checkHowTextStreamsAsLines(String text, List<String> expectedLines) {
-        Assert.assertThat(lines(text), CoreMatchers.is(expectedLines));
+        Assert.assertThat(
+                List.ofAll(new ReaderBasedTextSource(new StringReader(text)).streamLines()),
+                CoreMatchers.is(expectedLines));
     }
 
     // REFACTOR Maybe move to a generic text library?
     public static String endWithLineSeparator(String text) {
         return String.format("%s%s", text, System.lineSeparator());
-    }
-
-    // REFACTOR Maybe move to a general text library?
-    public static List<String> lines(String blobOfText) {
-        return List.ofAll(streamLinesFromSource(new StringReader(blobOfText)));
     }
 }

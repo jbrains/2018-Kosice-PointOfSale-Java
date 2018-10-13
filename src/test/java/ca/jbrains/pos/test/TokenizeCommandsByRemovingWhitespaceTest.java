@@ -27,5 +27,4 @@ public class TokenizeCommandsByRemovingWhitespaceTest {
                 tokens,
                 removingWhitespaceCommandLexer.tokenize(text).toList());
     }
-
 }
