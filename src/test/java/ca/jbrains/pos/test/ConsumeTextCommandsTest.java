@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 public class ConsumeTextCommandsTest {
 
@@ -55,8 +56,14 @@ public class ConsumeTextCommandsTest {
     // SMELL StringReader is probably too specific
     private void consumeTextCommandsUsingListener(StringReader stringReader, BarcodeScannedListener barcodeScannedListener) throws IOException {
         // REFACTOR Cluster of behavior. Let's separate sanitize() from the rest.
-        new BufferedReader(stringReader).lines()
+        streamLinesFromSource(stringReader)
                 .flatMap(SanitizeCommandTest::sanitize)
                 .forEach(barcodeScannedListener::onBarcode);
+    }
+
+    // DMZ
+    // REFACTOR Replace StringReader with Reader
+    private Stream<String> streamLinesFromSource(StringReader stringReader) {
+        return new BufferedReader(stringReader).lines();
     }
 }
