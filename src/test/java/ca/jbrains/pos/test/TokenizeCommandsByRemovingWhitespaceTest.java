@@ -9,22 +9,26 @@ public class TokenizeCommandsByRemovingWhitespaceTest {
 
     @Test
     public void removeLeadingWhitespace() throws Exception {
-        assertThatTextTokenizesAs(" \t::command::", List.of("::command::"));
+        Assert.assertEquals(
+                List.of("::command::"),
+                tokensFrom(" \t::command::"));
     }
 
     @Test
     public void removeTrailingWhitespace() throws Exception {
-        assertThatTextTokenizesAs("::command::  \t  \f  ", List.of("::command::"));
+        Assert.assertEquals(
+                List.of("::command::"),
+                tokensFrom("::command::  \t  \f  "));
     }
 
     @Test
     public void gracefullyHandleEmbeddedLineBreaks() throws Exception {
-        assertThatTextTokenizesAs("::first::\n::second::", List.of("::first::", "::second::"));
+        Assert.assertEquals(
+                List.of("::first::", "::second::"),
+                tokensFrom("::first::\n::second::"));
     }
 
-    private void assertThatTextTokenizesAs(String text, List<String> tokens) {
-        Assert.assertEquals(
-                tokens,
-                removingWhitespaceCommandLexer.tokenize(text).toList());
+    private List<String> tokensFrom(String text) {
+        return removingWhitespaceCommandLexer.tokenize(text).toList();
     }
 }
