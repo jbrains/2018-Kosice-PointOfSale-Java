@@ -2,6 +2,7 @@ package ca.jbrains.java.test;
 
 import ca.jbrains.java.ReaderBasedTextSource;
 import io.vavr.collection.List;
+import io.vavr.collection.Stream;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,7 +10,6 @@ import org.junit.Test;
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.stream.Stream;
 
 public class LearnReadingLinesTest {
     public static Stream<String> streamLinesFromSource(Reader source) {

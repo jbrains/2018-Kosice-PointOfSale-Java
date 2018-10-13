@@ -1,8 +1,9 @@
 package ca.jbrains.java;
 
+import io.vavr.collection.Stream;
+
 import java.io.BufferedReader;
 import java.io.Reader;
-import java.util.stream.Stream;
 
 // CONTRACT
 // Block on Reader and consume all its input as text.
@@ -32,6 +33,6 @@ public class ReaderBasedTextSource {
     // CONTRACT
     // Might throw UncheckedIOException as you work with the stream.
     public Stream<String> streamLines() {
-        return bufferedReader.lines();
+        return Stream.ofAll(bufferedReader.lines());
     }
 }

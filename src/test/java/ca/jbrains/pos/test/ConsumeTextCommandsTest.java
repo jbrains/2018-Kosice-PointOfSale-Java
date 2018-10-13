@@ -1,6 +1,7 @@
 package ca.jbrains.pos.test;
 
 import ca.jbrains.java.ReaderBasedTextSource;
+import io.vavr.collection.Stream;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 public class ConsumeTextCommandsTest {
 

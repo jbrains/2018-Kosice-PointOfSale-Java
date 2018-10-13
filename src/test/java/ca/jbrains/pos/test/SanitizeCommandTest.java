@@ -1,12 +1,12 @@
 package ca.jbrains.pos.test;
 
+import io.vavr.collection.List;
+import io.vavr.collection.Stream;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SanitizeCommandTest {
     @Test
@@ -25,14 +25,21 @@ public class SanitizeCommandTest {
     }
 
     private static List<String> commands(String... items) {
-        return Arrays.asList(items);
+        return List.of(items);
     }
 
-    private static List<String> commands(Stream<String> commandStream) {
-        return commandStream.collect(Collectors.toList());
+    private static io.vavr.collection.List<String> commands(Stream<String> commandStream) {
+        return commandStream.toList();
     }
 
-    public static Stream<String> sanitize(String text) {
-        return Stream.of(text.split(System.lineSeparator())).map(String::trim);
+    public static io.vavr.collection.Stream<String> sanitize(String text) {
+        return new RemovingWhitespaceCommandLexer().tokenize(text);
+    }
+
+    public static class RemovingWhitespaceCommandLexer {
+        public io.vavr.collection.Stream<String> tokenize(String text) {
+            String[] lines = text.split(System.lineSeparator());
+            return io.vavr.collection.Stream.of(lines).map(String::trim);
+        }
     }
 }
