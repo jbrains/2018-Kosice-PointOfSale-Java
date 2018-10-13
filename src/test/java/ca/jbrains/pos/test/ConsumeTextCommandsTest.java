@@ -5,6 +5,7 @@ import org.mockito.Mockito;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -62,8 +63,8 @@ public class ConsumeTextCommandsTest {
     }
 
     // DMZ
-    // REFACTOR Replace StringReader with Reader
-    private Stream<String> streamLinesFromSource(StringReader stringReader) {
-        return new BufferedReader(stringReader).lines();
+    // SMELL Is the something even more generic than Reader?
+    private Stream<String> streamLinesFromSource(Reader source) {
+        return new BufferedReader(source).lines();
     }
 }
