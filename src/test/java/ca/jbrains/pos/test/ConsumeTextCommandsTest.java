@@ -57,9 +57,9 @@ public class ConsumeTextCommandsTest {
     // SMELL StringReader is probably too specific
     private void consumeTextCommandsUsingListener(StringReader stringReader, BarcodeScannedListener barcodeScannedListener) throws IOException {
         // REFACTOR Cluster of behavior. Let's separate sanitize() from the rest.
-        RemovingWhitespaceCommandLexer removingWhitespaceCommandLexer = new RemovingWhitespaceCommandLexer();
+        CommandLexer commandLexer = new RemovingWhitespaceCommandLexer();
         streamLinesFromSource(stringReader)
-                .flatMap(removingWhitespaceCommandLexer::tokenize)
+                .flatMap(commandLexer::tokenize)
                 .forEach(barcodeScannedListener::onBarcode);
     }
 

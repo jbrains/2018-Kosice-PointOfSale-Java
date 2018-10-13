@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TokenizeCommandsByRemovingWhitespaceTest {
-    private RemovingWhitespaceCommandLexer removingWhitespaceCommandLexer = new RemovingWhitespaceCommandLexer();
+    private CommandLexer removingWhitespaceCommandLexer = new RemovingWhitespaceCommandLexer();
 
     @Test
     public void removeLeadingWhitespace() throws Exception {
