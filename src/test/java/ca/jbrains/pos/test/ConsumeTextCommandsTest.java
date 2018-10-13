@@ -1,5 +1,6 @@
 package ca.jbrains.pos.test;
 
+import ca.jbrains.java.ReaderBasedTextSource;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -64,7 +65,8 @@ public class ConsumeTextCommandsTest {
 
     // DMZ
     // SMELL Is the something even more generic than Reader?
+    // REFACTOR Introduce TextSource interface?
     private Stream<String> streamLinesFromSource(Reader source) {
-        return new BufferedReader(source).lines();
+        return new ReaderBasedTextSource(source).streamLines();
     }
 }
